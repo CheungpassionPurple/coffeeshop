@@ -183,6 +183,80 @@ def get_orders():  # noqa: E501
             )
     return orders
 
+
+def update_order_coffee(order_id, name):  # noqa: E501
+    """Updates the coffee type in the order
+
+    Change the type of a coffee ordered. The order must be identified by its ID. # noqa: E501
+
+    :param order_id: ID of order that needs to be updated
+    :type order_id: int
+    :param name: coffee type for order that needs to be updated
+    :type name: str
+
+    :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
+    """
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(f"UPDATE OrderTable SET name = '{name}' WHERE id = {order_id}")
+    with sqlite3.connect(DB_PATH) as conn:
+        return get_order_by_id(order_id)
+
+
+def update_order_milk(order_id, milk):  # noqa: E501
+    """Updates the milk type in the order
+
+    Change the type of a milk ordered. The order must be identified by its ID. # noqa: E501
+
+    :param order_id: ID of order that needs to be updated
+    :type order_id: int
+    :param milk: milk type for order that needs to be updated
+    :type milk: str
+
+    :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
+    """
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(f"UPDATE OrderTable SET milk = '{milk}' WHERE id = {order_id}")
+    with sqlite3.connect(DB_PATH) as conn:
+        return get_order_by_id(order_id)
+
+
+def update_order_size(order_id, size):  # noqa: E501
+    """Updates the size of the drink ordered
+
+    Change the size of the order. The order must be identified by its ID. # noqa: E501
+
+    :param order_id: ID of order that needs to be updated
+    :type order_id: int
+    :param size: size for order that needs to be updated
+    :type size: str
+
+    :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
+    """
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(f"UPDATE OrderTable SET size = '{size}' WHERE id = {order_id}")
+    with sqlite3.connect(DB_PATH) as conn:
+        return get_order_by_id(order_id)
+
+
+def update_order_temp(order_id, temperature):  # noqa: E501
+    """Updates the temperature of the order
+
+    Change the temperature of the order. The order must be identified by its ID. # noqa: E501
+
+    :param order_id: ID of order that needs to be updated
+    :type order_id: int
+    :param temperature: temperature for order that needs to be updated
+    :type temperature: str
+
+    :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
+    """
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(f"UPDATE OrderTable SET temperature = '{temperature}' WHERE id = {order_id}")
+    with sqlite3.connect(DB_PATH) as conn:
+        return get_order_by_id(order_id)
+
 if not os.path.exists(DB_PATH):
     initialize_database()
+
+
 

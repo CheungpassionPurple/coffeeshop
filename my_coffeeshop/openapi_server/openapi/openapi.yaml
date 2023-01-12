@@ -238,7 +238,175 @@ paths:
           description: Successful update
         "405":
           description: Invalid input
-      summary: Updates a order in the store
+      summary: Updates the status of the order in the store
+      tags:
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
+  /store/order/{orderId}/milktype/{milk}:
+    patch:
+      description: Change the type of a milk ordered. The order must be identified
+        by its ID.
+      operationId: update_order_milk
+      parameters:
+      - description: ID of order that needs to be updated
+        explode: false
+        in: path
+        name: orderId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: milk type for order that needs to be updated
+        explode: false
+        in: path
+        name: milk
+        required: true
+        schema:
+          enum:
+          - noMilk
+          - whole
+          - oat
+          - soy
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: Successful update
+        "405":
+          description: Invalid input
+      summary: Updates the milk type in the order
+      tags:
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
+  /store/order/{orderId}/nametype/{name}:
+    patch:
+      description: Change the type of a coffee ordered. The order must be identified
+        by its ID.
+      operationId: update_order_coffee
+      parameters:
+      - description: ID of order that needs to be updated
+        explode: false
+        in: path
+        name: orderId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: coffee type for order that needs to be updated
+        explode: false
+        in: path
+        name: name
+        required: true
+        schema:
+          enum:
+          - latte
+          - espresso
+          - drip coffee
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: Successful update
+        "405":
+          description: Invalid input
+      summary: Updates the coffee type in the order
+      tags:
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
+  /store/order/{orderId}/sizetype/{size}:
+    patch:
+      description: Change the size of the order. The order must be identified by its
+        ID.
+      operationId: update_order_size
+      parameters:
+      - description: ID of order that needs to be updated
+        explode: false
+        in: path
+        name: orderId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: size for order that needs to be updated
+        explode: false
+        in: path
+        name: size
+        required: true
+        schema:
+          enum:
+          - small
+          - medium
+          - large
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: Successful update
+        "405":
+          description: Invalid input
+      summary: Updates the size of the drink ordered
+      tags:
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
+  /store/order/{orderId}/temptype/{temperature}:
+    patch:
+      description: Change the temperature of the order. The order must be identified
+        by its ID.
+      operationId: update_order_temp
+      parameters:
+      - description: ID of order that needs to be updated
+        explode: false
+        in: path
+        name: orderId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: temperature for order that needs to be updated
+        explode: false
+        in: path
+        name: temperature
+        required: true
+        schema:
+          enum:
+          - hot
+          - cold
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: Successful update
+        "405":
+          description: Invalid input
+      summary: Updates the temperature of the order
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller

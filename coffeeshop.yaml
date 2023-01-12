@@ -163,7 +163,7 @@ paths:
     patch:
       tags:
         - store
-      summary: Updates a order in the store
+      summary: Updates the status of the order in the store
       description: 'Change the status of an order in the store. The order must be identified by its ID.'
       operationId: updateOrder
       parameters:
@@ -219,6 +219,153 @@ paths:
                 type: string
         '400':
           description: Invalid order value
+  '/store/order/{orderId}/nametype/{name}':
+    patch:
+      tags:
+        - store
+      summary: Updates the coffee type in the order
+      description: 'Change the type of a coffee ordered. The order must be identified by its ID.'
+      operationId: updateOrderCoffee
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: name
+          in: path
+          description: coffee type for order that needs to be updated
+          required: true
+          schema:
+            type: string
+            enum:
+              - latte
+              - espresso
+              - drip coffee
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '405':
+          description: Invalid input
+          
+  '/store/order/{orderId}/milktype/{milk}':
+    patch:
+      tags:
+        - store
+      summary: Updates the milk type in the order
+      description: 'Change the type of a milk ordered. The order must be identified by its ID.'
+      operationId: updateOrderMilk
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: milk
+          in: path
+          description: milk type for order that needs to be updated
+          required: true
+          schema:
+            type: string
+            enum:
+              - noMilk
+              - whole
+              - oat
+              - soy
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '405':
+          description: Invalid input
+
+  '/store/order/{orderId}/temptype/{temperature}':
+    patch:
+      tags:
+        - store
+      summary: Updates the temperature of the order
+      description: 'Change the temperature of the order. The order must be identified by its ID.'
+      operationId: updateOrderTemp
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: temperature
+          in: path
+          description: temperature for order that needs to be updated
+          required: true
+          schema:
+            type: string
+            enum:
+              - hot
+              - cold
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '405':
+          description: Invalid input
+
+  '/store/order/{orderId}/sizetype/{size}':
+    patch:
+      tags:
+        - store
+      summary: Updates the size of the drink ordered
+      description: 'Change the size of the order. The order must be identified by its ID.'
+      operationId: updateOrderSize
+      parameters:
+        - name: orderId
+          in: path
+          description: ID of order that needs to be updated
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: size
+          in: path
+          description: size for order that needs to be updated
+          required: true
+          schema:
+            type: string
+            enum:
+              - small
+              - medium
+              - large
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '405':
+          description: Invalid input
 
 
 components:
