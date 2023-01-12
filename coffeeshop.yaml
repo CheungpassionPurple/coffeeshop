@@ -186,6 +186,14 @@ paths:
               - made
               - delivered
       responses:
+        '200':
+          description: Successful update
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
         '405':
           description: Invalid input
     delete:
@@ -203,6 +211,12 @@ paths:
             type: integer
             format: int64
       responses:
+        '200':
+          description: Successful deletion
+          content:
+            application/xml:
+              schema:
+                type: string
         '400':
           description: Invalid order value
 

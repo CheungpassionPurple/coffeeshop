@@ -39,6 +39,7 @@ class TestStoreController(BaseTestCase):
         Deletes a record of an order.
         """
         headers = { 
+            'Accept': 'application/xml',
         }
         response = self.client.open(
             '/v3/store/order/{order_id}'.format(order_id=56),
@@ -79,6 +80,21 @@ class TestStoreController(BaseTestCase):
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
+    def test_get_orders(self):
+        """Test case for get_orders
+
+        Retrieve all records of coffee orders from the store.
+        """
+        headers = { 
+            'Accept': 'application/json',
+        }
+        response = self.client.open(
+            '/v3/store/order',
+            method='GET',
+            headers=headers)
+        self.assert200(response,
+                       'Response body is : ' + response.data.decode('utf-8'))
+
     def test_update_order(self):
         """Test case for update_order
 
@@ -86,6 +102,7 @@ class TestStoreController(BaseTestCase):
         """
         query_string = [('status', 'status_example')]
         headers = { 
+            'Accept': 'application/xml',
         }
         response = self.client.open(
             '/v3/store/order/{order_id}'.format(order_id=56),

@@ -157,6 +157,12 @@ paths:
           type: integer
         style: simple
       responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                type: string
+          description: Successful deletion
         "400":
           description: Invalid order value
       summary: Deletes a record of an order.
@@ -222,6 +228,14 @@ paths:
           type: string
         style: form
       responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: Successful update
         "405":
           description: Invalid input
       summary: Updates a order in the store

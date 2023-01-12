@@ -18,7 +18,7 @@ DB_PATH=os.path.join(
     'orders_db.db'
 )
 
-def dummy_database_initialize():
+def initialize_database():
     with sqlite3.connect(DB_PATH) as conn:
         # Init the order table
         columns = [
@@ -34,18 +34,18 @@ def dummy_database_initialize():
 
         conn.execute(create_table_cmd)
 
-        # #Init a few items into DB
-        # initItems = [
-        #     "61396441, 'latte', 'small', 'cold', 'oat', 'placed'",
-        #     "15456372, 'espresso', 'large', 'cold', 'soy', 'making'",
-        #     "30876545, 'drip coffee', 'medium', 'hot', 'noMilk', 'made'",
-        #     "25425104, 'espresso', 'small', 'hot', 'oat', 'delivered'",
-        # ]
+        #Init a few sample items into DB
+        initItems = [
+            "61396441, 'latte', 'small', 'cold', 'oat', 'placed'",
+            "15456372, 'espresso', 'large', 'cold', 'soy', 'making'",
+            "30876545, 'drip coffee', 'medium', 'hot', 'noMilk', 'made'",
+            "25425104, 'espresso', 'small', 'hot', 'oat', 'delivered'",
+        ]
 
-        # # Insert the items
-        # for i_data in initItems:
-        #     insert_cmd = f"INSERT INTO OrderTable VALUES ({i_data})"
-        #     conn.execute(insert_cmd)
+        # Insert the items
+        for i_data in initItems:
+            insert_cmd = f"INSERT INTO OrderTable VALUES ({i_data})"
+            conn.execute(insert_cmd)
 
 def add_order(name, size=None, temperature=None, milk=None):  # noqa: E501
     """Submit a new order
@@ -183,8 +183,6 @@ def get_orders():  # noqa: E501
             )
     return orders
 
-
-
 if not os.path.exists(DB_PATH):
-    dummy_database_initialize()
+    initialize_database()
 
