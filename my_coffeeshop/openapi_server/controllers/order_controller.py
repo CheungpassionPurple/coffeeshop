@@ -9,6 +9,8 @@ from openapi_server import util
 
 import sqlite3
 
+DB_PATH='/home/justincheung/ACourse/Week13Microservices/coffeeshop/my_coffeeshop/openapi_server/controllers/orders_db.db'
+
 def add_order():  # noqa: E501
     """Submit a new order
 
@@ -22,14 +24,10 @@ def add_order():  # noqa: E501
     if connexion.request.is_json:
         order = Order.from_dict(connexion.request.get_json())  # noqa: E501
 
-    conn = sqlite3.connect("C:/Users/212809778/Documents/microservice-hw/flask_venv/MyCoffeeShop/openapi_server/controllers/orders_db.db")
-    cursor = conn.cursor()
-    tmporder = str(str(order.id) + ",'" + order.items + "','" + order.status + "'")
-    print(tmporder)
-    insert_cmd = f"INSERT INTO OrderTable VALUES ({tmporder})"
-    cursor.execute(insert_cmd)
-    conn.commit()
-    return 'do some magic!'
+    with sqlite3.connect(DB_PATH) as conn:
+        tmporder = str(str(order.id) + ",'" + order.items + "','" + order.status + "'")
+        conn.execute(f"INSERT INTO OrderTable VALUES ({tmporder})")
+    return order
 
 
 def delete_order(order_id):  # noqa: E501
@@ -42,14 +40,9 @@ def delete_order(order_id):  # noqa: E501
 
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
-
-    conn = sqlite3.connect("C:/Users/212809778/Documents/microservice-hw/flask_venv/MyCoffeeShop/openapi_server/controllers/orders_db.db")
-    cursor = conn.cursor()
-    insert_cmd = f"DELETE FROM OrderTable WHERE id = {order_id}"
-    cursor.execute(insert_cmd)
-    conn.commit()
-
-    return 'do some magic!'
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(f"DELETE FROM OrderTable WHERE id = {order_id}")
+    return f"Deleted order {order_id}!"
 
 
 def find_orders_by_status(status):  # noqa: E501
@@ -62,16 +55,11 @@ def find_orders_by_status(status):  # noqa: E501
 
     :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
     """
-    conn = sqlite3.connect("C:/Users/212809778/Documents/microservice-hw/flask_venv/MyCoffeeShop/openapi_server/controllers/orders_db.db")
-    cursor = conn.cursor()
-    print(status[0])
-    insert_cmd = f"SELECT * FROM OrderTable WHERE status = '{status[0]}'"
-    rows = cursor.execute(insert_cmd)
-    a = ""
-    for row in rows:
-        a += str(row)
-    conn.commit()
-
+    with sqlite3.connect(DB_PATH) as conn:
+        rows = conn.execute(f"SELECT * FROM OrderTable WHERE status = '{status[0]}'")
+        a = ""
+        for row in rows:
+            a += str(row)
     return str(a)
 
 
@@ -85,15 +73,11 @@ def get_order_by_id(order_id):  # noqa: E501
 
     :rtype: Union[Order, Tuple[Order, int], Tuple[Order, int, Dict[str, str]]
     """
-    conn = sqlite3.connect("C:/Users/212809778/Documents/microservice-hw/flask_venv/MyCoffeeShop/openapi_server/controllers/orders_db.db")
-    cursor = conn.cursor()
-    insert_cmd = f"SELECT * FROM OrderTable WHERE id = {order_id}"
-    rows = cursor.execute(insert_cmd)
-    a = ""
-    for row in rows:
-        a += str(row)
-    conn.commit()
-
+    with sqlite3.connect(DB_PATH) as conn:
+        rows = conn.execute(f"SELECT * FROM OrderTable WHERE id = {order_id}")
+        a = ""
+        for row in rows:
+            a += str(row)
     return str(a)
 
 def update_order_with_form(order_id, items, status):  # noqa: E501
@@ -111,10 +95,6 @@ def update_order_with_form(order_id, items, status):  # noqa: E501
     :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
     """
 
-    conn = sqlite3.connect("C:/Users/212809778/Documents/microservice-hw/flask_venv/MyCoffeeShop/openapi_server/controllers/orders_db.db")
-    cursor = conn.cursor()
-    insert_cmd = f"UPDATE OrderTable SET items = '{items}', status = '{status}' WHERE id = {order_id}"
-    cursor.execute(insert_cmd)
-    conn.commit()
-
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(f"UPDATE OrderTable SET items = '{items}', status = '{status}' WHERE id = {order_id}")
     return 'do some magic!'
