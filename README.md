@@ -1,5 +1,7 @@
 # coffeeshop
 
+Collaborators: Zoe Frongillo, Kate Piper, Mara Noskowiak, Obi Ogbonna, Nick Escobar, Justin Cheung 
+
 setup is something like this, but will require finagling based on your machine environment:
 
 `git clone https://<YOUR GIT USERNAME>:<YOUR GIT PASSWORD>@github.com/CheungpassionPurple/coffeeshop.git`
