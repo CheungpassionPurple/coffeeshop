@@ -15,30 +15,45 @@ class Order(Model):
     Do not edit the class manually.
     """
 
-    def __init__(self, items=None, id=None, status=None):  # noqa: E501
+    def __init__(self, id=None, name=None, size=None, temperature=None, milk=None, status=None):  # noqa: E501
         """Order - a model defined in OpenAPI
 
-        :param items: The items of this Order.  # noqa: E501
-        :type items: str
         :param id: The id of this Order.  # noqa: E501
         :type id: int
+        :param name: The name of this Order.  # noqa: E501
+        :type name: str
+        :param size: The size of this Order.  # noqa: E501
+        :type size: str
+        :param temperature: The temperature of this Order.  # noqa: E501
+        :type temperature: str
+        :param milk: The milk of this Order.  # noqa: E501
+        :type milk: str
         :param status: The status of this Order.  # noqa: E501
         :type status: str
         """
         self.openapi_types = {
-            'items': str,
             'id': int,
+            'name': str,
+            'size': str,
+            'temperature': str,
+            'milk': str,
             'status': str
         }
 
         self.attribute_map = {
-            'items': 'items',
             'id': 'id',
+            'name': 'name',
+            'size': 'size',
+            'temperature': 'temperature',
+            'milk': 'milk',
             'status': 'status'
         }
 
-        self._items = items
         self._id = id
+        self._name = name
+        self._size = size
+        self._temperature = temperature
+        self._milk = milk
         self._status = status
 
     @classmethod
@@ -53,30 +68,10 @@ class Order(Model):
         return util.deserialize_model(dikt, cls)
 
     @property
-    def items(self):
-        """Gets the items of this Order.
-
-
-        :return: The items of this Order.
-        :rtype: str
-        """
-        return self._items
-
-    @items.setter
-    def items(self, items):
-        """Sets the items of this Order.
-
-
-        :param items: The items of this Order.
-        :type items: str
-        """
-
-        self._items = items
-
-    @property
     def id(self):
         """Gets the id of this Order.
 
+        A unique ID number that identifies this specific coffee order.  # noqa: E501
 
         :return: The id of this Order.
         :rtype: int
@@ -87,12 +82,129 @@ class Order(Model):
     def id(self, id):
         """Sets the id of this Order.
 
+        A unique ID number that identifies this specific coffee order.  # noqa: E501
 
         :param id: The id of this Order.
         :type id: int
         """
 
         self._id = id
+
+    @property
+    def name(self):
+        """Gets the name of this Order.
+
+        The name of the type of coffee to order.  # noqa: E501
+
+        :return: The name of this Order.
+        :rtype: str
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        """Sets the name of this Order.
+
+        The name of the type of coffee to order.  # noqa: E501
+
+        :param name: The name of this Order.
+        :type name: str
+        """
+        allowed_values = ["latte", "espresso", "drip coffee"]  # noqa: E501
+        if name not in allowed_values:
+            raise ValueError(
+                "Invalid value for `name` ({0}), must be one of {1}"
+                .format(name, allowed_values)
+            )
+
+        self._name = name
+
+    @property
+    def size(self):
+        """Gets the size of this Order.
+
+        Drink size.  # noqa: E501
+
+        :return: The size of this Order.
+        :rtype: str
+        """
+        return self._size
+
+    @size.setter
+    def size(self, size):
+        """Sets the size of this Order.
+
+        Drink size.  # noqa: E501
+
+        :param size: The size of this Order.
+        :type size: str
+        """
+        allowed_values = ["small", "medium", "large"]  # noqa: E501
+        if size not in allowed_values:
+            raise ValueError(
+                "Invalid value for `size` ({0}), must be one of {1}"
+                .format(size, allowed_values)
+            )
+
+        self._size = size
+
+    @property
+    def temperature(self):
+        """Gets the temperature of this Order.
+
+        Temperature of the drink.  # noqa: E501
+
+        :return: The temperature of this Order.
+        :rtype: str
+        """
+        return self._temperature
+
+    @temperature.setter
+    def temperature(self, temperature):
+        """Sets the temperature of this Order.
+
+        Temperature of the drink.  # noqa: E501
+
+        :param temperature: The temperature of this Order.
+        :type temperature: str
+        """
+        allowed_values = ["hot", "cold"]  # noqa: E501
+        if temperature not in allowed_values:
+            raise ValueError(
+                "Invalid value for `temperature` ({0}), must be one of {1}"
+                .format(temperature, allowed_values)
+            )
+
+        self._temperature = temperature
+
+    @property
+    def milk(self):
+        """Gets the milk of this Order.
+
+        Type of milk added to the drink.  # noqa: E501
+
+        :return: The milk of this Order.
+        :rtype: str
+        """
+        return self._milk
+
+    @milk.setter
+    def milk(self, milk):
+        """Sets the milk of this Order.
+
+        Type of milk added to the drink.  # noqa: E501
+
+        :param milk: The milk of this Order.
+        :type milk: str
+        """
+        allowed_values = ["noMilk", "whole", "oat", "soy"]  # noqa: E501
+        if milk not in allowed_values:
+            raise ValueError(
+                "Invalid value for `milk` ({0}), must be one of {1}"
+                .format(milk, allowed_values)
+            )
+
+        self._milk = milk
 
     @property
     def status(self):
@@ -114,7 +226,7 @@ class Order(Model):
         :param status: The status of this Order.
         :type status: str
         """
-        allowed_values = ["placed", "making", "complete", "delivered"]  # noqa: E501
+        allowed_values = ["placed", "making", "made", "delivered"]  # noqa: E501
         if status not in allowed_values:
             raise ValueError(
                 "Invalid value for `status` ({0}), must be one of {1}"

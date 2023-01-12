@@ -1,24 +1,20 @@
 openapi: 3.0.0
 servers:
-  - url: 'http://orderstore.swagger.io/v2'
+  - url: 'http://localhost:8080/v3'
+    description: Example API Service running locally
 info:
-  description: >-
-    This is a sample server Orderstore server. For this sample, you can use the api key
-    `special-key` to test the authorization filters.
+  title: Simple Coffee Shop API
+  description: An API to interact with a Coffee Shop
   version: 1.0.0
-  title: OpenAPI Orderstore
-  license:
-    name: Apache-2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
 tags:
-  - name: order
-    description: Everything about your Orders
+  - name: store
+    description: Access point to Coffee Shop Orders
 
 paths:
-  /order:
+  /store/order:
     post:
       tags:
-        - order
+        - store
       summary: Submit a new order
       description: ''
       operationId: addOrder
@@ -34,14 +30,75 @@ paths:
                 $ref: '#/components/schemas/Order'
         '405':
           description: Invalid input
-      requestBody:
-        $ref: '#/components/requestBodies/Order'
-  /order/findByStatus:
+      parameters:
+        - name: name
+          in: query
+          description: The name of the type of coffee to order.
+          required: true
+          schema:
+            type: string
+            enum:
+              - latte
+              - espresso
+              - drip coffee
+        - name: size
+          in: query
+          description: Drink size.
+          schema: 
+            type: string
+            enum:
+              - small
+              - medium
+              - large
+            default: medium
+        - name: temperature
+          in: query
+          description: Temperature of the drink.
+          schema:
+            type: string
+            enum:
+              - hot
+              - cold
+            default: hot
+        - name: milk
+          in: query
+          description: Type of milk added to the drink.
+          schema:
+            type: string
+            enum:
+              - noMilk
+              - whole
+              - oat
+              - soy
+            default: noMilk
     get:
       tags:
-        - order
+        - store
+      summary: Retrieve all records of coffee orders from the store.
+      description: ''
+      operationId: getOrders
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+
+
+  /store/order/findByStatus:
+    get:
+      tags:
+        - store
       summary: Finds Orders by status
-      description: Multiple status values can be provided with comma separated strings
+      description: ''
       operationId: findOrdersByStatus
       parameters:
         - name: status
@@ -52,14 +109,12 @@ paths:
           explode: false
           deprecated: false
           schema:
-            type: array
-            items:
-              type: string
-              enum:
-                - placed
-                - making
-                - complete
-                - delivered
+            type: string
+            enum:
+              - placed
+              - making
+              - made
+              - delivered
       responses:
         '200':
           description: successful operation
@@ -76,17 +131,17 @@ paths:
                   $ref: '#/components/schemas/Order'
         '400':
           description: Invalid status value
-  '/order/{orderId}':
+  '/store/order/{orderId}':
     get:
       tags:
-        - order
+        - store
       summary: Find order by ID
-      description: Returns a single order
+      description: Returns all information on a single order.
       operationId: getOrderById
       parameters:
         - name: orderId
           in: path
-          description: ID of order to return
+          description: ID of order to return all information on.
           required: true
           schema:
             type: integer
@@ -107,10 +162,10 @@ paths:
           description: Order not found
     patch:
       tags:
-        - order
-      summary: Updates a order in the store with form data
-      description: ''
-      operationId: updateOrderWithForm
+        - store
+      summary: Updates a order in the store
+      description: 'Change the status of an order in the store. The order must be identified by its ID.'
+      operationId: updateOrder
       parameters:
         - name: orderId
           in: path
@@ -119,38 +174,25 @@ paths:
           schema:
             type: integer
             format: int64
-        - name: items
-          in: query
-          description: items in order that can be updated
-          required: true
-          schema:
-            type: string
         - name: status
           in: query
           description: status order that needs to be updated
           required: true
           schema:
             type: string
+            enum:
+              - placed
+              - making
+              - made
+              - delivered
       responses:
         '405':
           description: Invalid input
-      #requestBody:
-      #  content:
-      #    application/x-www-form-urlencoded:
-      #      schema:
-      #        type: object
-      #        properties:
-      #          name:
-      #            description: Updated name of the order
-      #            type: string
-      #          status:
-      #            description: Updated status of the order
-      #            type: string
     delete:
       tags:
-        - order
-      summary: Deletes a order
-      description: ''
+        - store
+      summary: Deletes a record of an order.
+      description: 'Deletes a record of an order.'
       operationId: deleteOrder
       parameters:
         - name: orderId
@@ -165,39 +207,52 @@ paths:
           description: Invalid order value
 
 
-externalDocs:
-  description: Find out more about Swagger
-  url: 'http://swagger.io'
 components:
-  requestBodies:
-    Order:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Order'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Order'
-      description: Order object that needs to be added to the store
-      required: true
   schemas:
     Order:
-      title: Coffeeshop Order
-      description: An orders from the order store
+      title: Coffeeshop Coffee Order
+      description: A coffee order from the coffee shop. Describes exactly one drink.
       type: object
       properties:
-        items:
-          type: string
         id:
           type: integer
           format: int64
-        status:
+          description: A unique ID number that identifies this specific coffee order.
+        name:
+          description: The name of the type of coffee to order.
           type: string
+          enum:
+            - latte
+            - espresso
+            - drip coffee
+        size:
+          description: Drink size.
+          type: string
+          enum:
+            - small
+            - medium
+            - large
+        temperature:
+          description: Temperature of the drink.
+          type: string
+          enum:
+            - hot
+            - cold
+        milk:
+          description: Type of milk added to the drink.
+          type: string
+          enum:
+            - noMilk
+            - whole
+            - oat
+            - soy
+        status:
           description: Order Status
+          type: string
           enum:
             - placed
             - making
-            - complete
+            - made
             - delivered
       xml:
         name: Order

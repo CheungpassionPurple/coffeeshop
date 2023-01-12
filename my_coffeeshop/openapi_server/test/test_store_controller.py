@@ -10,38 +10,38 @@ from openapi_server.models.order import Order  # noqa: E501
 from openapi_server.test import BaseTestCase
 
 
-class TestOrderController(BaseTestCase):
-    """OrderController integration test stubs"""
+class TestStoreController(BaseTestCase):
+    """StoreController integration test stubs"""
 
-    @unittest.skip("Connexion does not support multiple consumes. See https://github.com/zalando/connexion/pull/760")
     def test_add_order(self):
         """Test case for add_order
 
         Submit a new order
         """
-        order = {"id":0,"items":"items","status":"placed"}
+        query_string = [('name', 'name_example'),
+                        ('size', 'medium'),
+                        ('temperature', 'hot'),
+                        ('milk', 'noMilk')]
         headers = { 
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
         }
         response = self.client.open(
-            '/v2/order',
+            '/v3/store/order',
             method='POST',
             headers=headers,
-            data=json.dumps(order),
-            content_type='application/json')
+            query_string=query_string)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
     def test_delete_order(self):
         """Test case for delete_order
 
-        Deletes a order
+        Deletes a record of an order.
         """
         headers = { 
         }
         response = self.client.open(
-            '/v2/order/{order_id}'.format(order_id=56),
+            '/v3/store/order/{order_id}'.format(order_id=56),
             method='DELETE',
             headers=headers)
         self.assert200(response,
@@ -52,12 +52,12 @@ class TestOrderController(BaseTestCase):
 
         Finds Orders by status
         """
-        query_string = [('status', ['status_example'])]
+        query_string = [('status', 'status_example')]
         headers = { 
             'Accept': 'application/json',
         }
         response = self.client.open(
-            '/v2/order/findByStatus',
+            '/v3/store/order/findByStatus',
             method='GET',
             headers=headers,
             query_string=query_string)
@@ -73,23 +73,22 @@ class TestOrderController(BaseTestCase):
             'Accept': 'application/json',
         }
         response = self.client.open(
-            '/v2/order/{order_id}'.format(order_id=56),
+            '/v3/store/order/{order_id}'.format(order_id=56),
             method='GET',
             headers=headers)
         self.assert200(response,
                        'Response body is : ' + response.data.decode('utf-8'))
 
-    def test_update_order_with_form(self):
-        """Test case for update_order_with_form
+    def test_update_order(self):
+        """Test case for update_order
 
-        Updates a order in the store with form data
+        Updates a order in the store
         """
-        query_string = [('items', 'items_example'),
-                        ('status', 'status_example')]
+        query_string = [('status', 'status_example')]
         headers = { 
         }
         response = self.client.open(
-            '/v2/order/{order_id}'.format(order_id=56),
+            '/v3/store/order/{order_id}'.format(order_id=56),
             method='PATCH',
             headers=headers,
             query_string=query_string)

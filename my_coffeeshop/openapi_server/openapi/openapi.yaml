@@ -1,27 +1,92 @@
 openapi: 3.0.0
 info:
-  description: "This is a sample server Orderstore server. For this sample, you can\
-    \ use the api key `special-key` to test the authorization filters."
-  license:
-    name: Apache-2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0.html
-  title: OpenAPI Orderstore
+  description: An API to interact with a Coffee Shop
+  title: Simple Coffee Shop API
   version: 1.0.0
-externalDocs:
-  description: Find out more about Swagger
-  url: http://swagger.io
 servers:
-- url: http://orderstore.swagger.io/v2
+- description: Example API Service running locally
+  url: http://localhost:8080/v3
 tags:
-- description: Everything about your Orders
-  name: order
+- description: Access point to Coffee Shop Orders
+  name: store
 paths:
-  /order:
+  /store/order:
+    get:
+      description: ""
+      operationId: get_orders
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: successful operation
+      summary: Retrieve all records of coffee orders from the store.
+      tags:
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
     post:
       description: ""
       operationId: add_order
-      requestBody:
-        $ref: '#/components/requestBodies/Order'
+      parameters:
+      - description: The name of the type of coffee to order.
+        explode: true
+        in: query
+        name: name
+        required: true
+        schema:
+          enum:
+          - latte
+          - espresso
+          - drip coffee
+          type: string
+        style: form
+      - description: Drink size.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          default: medium
+          enum:
+          - small
+          - medium
+          - large
+          type: string
+        style: form
+      - description: Temperature of the drink.
+        explode: true
+        in: query
+        name: temperature
+        required: false
+        schema:
+          default: hot
+          enum:
+          - hot
+          - cold
+          type: string
+        style: form
+      - description: Type of milk added to the drink.
+        explode: true
+        in: query
+        name: milk
+        required: false
+        schema:
+          default: noMilk
+          enum:
+          - noMilk
+          - whole
+          - oat
+          - soy
+          type: string
+        style: form
       responses:
         "200":
           content:
@@ -36,11 +101,11 @@ paths:
           description: Invalid input
       summary: Submit a new order
       tags:
-      - order
-      x-openapi-router-controller: openapi_server.controllers.order_controller
-  /order/findByStatus:
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
+  /store/order/findByStatus:
     get:
-      description: Multiple status values can be provided with comma separated strings
+      description: ""
       operationId: find_orders_by_status
       parameters:
       - deprecated: false
@@ -50,14 +115,12 @@ paths:
         name: status
         required: true
         schema:
-          items:
-            enum:
-            - placed
-            - making
-            - complete
-            - delivered
-            type: string
-          type: array
+          enum:
+          - placed
+          - making
+          - made
+          - delivered
+          type: string
         style: form
       responses:
         "200":
@@ -77,11 +140,11 @@ paths:
           description: Invalid status value
       summary: Finds Orders by status
       tags:
-      - order
-      x-openapi-router-controller: openapi_server.controllers.order_controller
-  /order/{orderId}:
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
+  /store/order/{orderId}:
     delete:
-      description: ""
+      description: Deletes a record of an order.
       operationId: delete_order
       parameters:
       - description: Order id to delete
@@ -96,15 +159,15 @@ paths:
       responses:
         "400":
           description: Invalid order value
-      summary: Deletes a order
+      summary: Deletes a record of an order.
       tags:
-      - order
-      x-openapi-router-controller: openapi_server.controllers.order_controller
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
     get:
-      description: Returns a single order
+      description: Returns all information on a single order.
       operationId: get_order_by_id
       parameters:
-      - description: ID of order to return
+      - description: ID of order to return all information on.
         explode: false
         in: path
         name: orderId
@@ -129,11 +192,12 @@ paths:
           description: Order not found
       summary: Find order by ID
       tags:
-      - order
-      x-openapi-router-controller: openapi_server.controllers.order_controller
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
     patch:
-      description: ""
-      operationId: update_order_with_form
+      description: Change the status of an order in the store. The order must be identified
+        by its ID.
+      operationId: update_order
       parameters:
       - description: ID of order that needs to be updated
         explode: false
@@ -144,66 +208,85 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: items in order that can be updated
-        explode: true
-        in: query
-        name: items
-        required: true
-        schema:
-          type: string
-        style: form
       - description: status order that needs to be updated
         explode: true
         in: query
         name: status
         required: true
         schema:
+          enum:
+          - placed
+          - making
+          - made
+          - delivered
           type: string
         style: form
       responses:
         "405":
           description: Invalid input
-      summary: Updates a order in the store with form data
+      summary: Updates a order in the store
       tags:
-      - order
-      x-openapi-router-controller: openapi_server.controllers.order_controller
+      - store
+      x-openapi-router-controller: openapi_server.controllers.store_controller
 components:
-  requestBodies:
-    Order:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Order'
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/Order'
-      description: Order object that needs to be added to the store
-      required: true
   schemas:
     Order:
-      description: An orders from the order store
+      description: A coffee order from the coffee shop. Describes exactly one drink.
       example:
+        size: small
+        name: latte
+        temperature: hot
+        milk: noMilk
         id: 0
-        items: items
         status: placed
       properties:
-        items:
-          title: items
-          type: string
         id:
+          description: A unique ID number that identifies this specific coffee order.
           format: int64
           title: id
           type: integer
+        name:
+          description: The name of the type of coffee to order.
+          enum:
+          - latte
+          - espresso
+          - drip coffee
+          title: name
+          type: string
+        size:
+          description: Drink size.
+          enum:
+          - small
+          - medium
+          - large
+          title: size
+          type: string
+        temperature:
+          description: Temperature of the drink.
+          enum:
+          - hot
+          - cold
+          title: temperature
+          type: string
+        milk:
+          description: Type of milk added to the drink.
+          enum:
+          - noMilk
+          - whole
+          - oat
+          - soy
+          title: milk
+          type: string
         status:
           description: Order Status
           enum:
           - placed
           - making
-          - complete
+          - made
           - delivered
           title: status
           type: string
-      title: Coffeeshop Order
+      title: Coffeeshop Coffee Order
       type: object
       xml:
         name: Order

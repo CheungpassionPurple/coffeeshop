@@ -22,10 +22,10 @@ REQUIRES = [
 setup(
     name=NAME,
     version=VERSION,
-    description="OpenAPI Orderstore",
+    description="Simple Coffee Shop API",
     author_email="",
     url="",
-    keywords=["OpenAPI", "OpenAPI Orderstore"],
+    keywords=["OpenAPI", "Simple Coffee Shop API"],
     install_requires=REQUIRES,
     packages=find_packages(),
     package_data={'': ['openapi/openapi.yaml']},
@@ -33,7 +33,7 @@ setup(
     entry_points={
         'console_scripts': ['openapi_server=openapi_server.__main__:main']},
     long_description="""\
-    This is a sample server Orderstore server. For this sample, you can use the api key &#x60;special-key&#x60; to test the authorization filters.
+    An API to interact with a Coffee Shop
     """
 )
 
