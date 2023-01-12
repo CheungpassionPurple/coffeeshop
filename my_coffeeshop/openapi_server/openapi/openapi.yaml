@@ -1,0 +1,209 @@
+openapi: 3.0.0
+info:
+  description: "This is a sample server Orderstore server. For this sample, you can\
+    \ use the api key `special-key` to test the authorization filters."
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  title: OpenAPI Orderstore
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: http://orderstore.swagger.io/v2
+tags:
+- description: Everything about your Orders
+  name: order
+paths:
+  /order:
+    post:
+      description: ""
+      operationId: add_order
+      requestBody:
+        $ref: '#/components/requestBodies/Order'
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Order'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: successful operation
+        "405":
+          description: Invalid input
+      summary: Submit a new order
+      tags:
+      - order
+      x-openapi-router-controller: openapi_server.controllers.order_controller
+  /order/findByStatus:
+    get:
+      description: Multiple status values can be provided with comma separated strings
+      operationId: find_orders_by_status
+      parameters:
+      - deprecated: false
+        description: Status values that need to be considered for filter
+        explode: false
+        in: query
+        name: status
+        required: true
+        schema:
+          items:
+            enum:
+            - placed
+            - making
+            - complete
+            - delivered
+            type: string
+          type: array
+        style: form
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Order'
+                type: array
+          description: successful operation
+        "400":
+          description: Invalid status value
+      summary: Finds Orders by status
+      tags:
+      - order
+      x-openapi-router-controller: openapi_server.controllers.order_controller
+  /order/{orderId}:
+    delete:
+      description: ""
+      operationId: delete_order
+      parameters:
+      - description: Order id to delete
+        explode: false
+        in: path
+        name: orderId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "400":
+          description: Invalid order value
+      summary: Deletes a order
+      tags:
+      - order
+      x-openapi-router-controller: openapi_server.controllers.order_controller
+    get:
+      description: Returns a single order
+      operationId: get_order_by_id
+      parameters:
+      - description: ID of order to return
+        explode: false
+        in: path
+        name: orderId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Order'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: successful operation
+        "400":
+          description: Invalid ID supplied
+        "404":
+          description: Order not found
+      summary: Find order by ID
+      tags:
+      - order
+      x-openapi-router-controller: openapi_server.controllers.order_controller
+    patch:
+      description: ""
+      operationId: update_order_with_form
+      parameters:
+      - description: ID of order that needs to be updated
+        explode: false
+        in: path
+        name: orderId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - description: items in order that can be updated
+        explode: true
+        in: query
+        name: items
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: status order that needs to be updated
+        explode: true
+        in: query
+        name: status
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "405":
+          description: Invalid input
+      summary: Updates a order in the store with form data
+      tags:
+      - order
+      x-openapi-router-controller: openapi_server.controllers.order_controller
+components:
+  requestBodies:
+    Order:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Order'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Order'
+      description: Order object that needs to be added to the store
+      required: true
+  schemas:
+    Order:
+      description: An orders from the order store
+      example:
+        id: 0
+        items: items
+        status: placed
+      properties:
+        items:
+          title: items
+          type: string
+        id:
+          format: int64
+          title: id
+          type: integer
+        status:
+          description: Order Status
+          enum:
+          - placed
+          - making
+          - complete
+          - delivered
+          title: status
+          type: string
+      title: Coffeeshop Order
+      type: object
+      xml:
+        name: Order
