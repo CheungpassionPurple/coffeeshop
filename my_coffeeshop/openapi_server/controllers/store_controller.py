@@ -12,7 +12,11 @@ import sqlite3
 import uuid
 import os
 
-DB_PATH='/home/justincheung/ACourse/Week13Microservices/coffeeshop/my_coffeeshop/openapi_server/controllers/orders_db.db'
+# Find absolute path of SQLite db file
+DB_PATH=os.path.join(
+    os.path.dirname(os.path.abspath(__file__)),
+    'orders_db.db'
+)
 
 def dummy_database_initialize():
     with sqlite3.connect(DB_PATH) as conn:
