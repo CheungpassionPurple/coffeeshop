@@ -94,7 +94,7 @@ class Order(Model):
     def name(self):
         """Gets the name of this Order.
 
-        The name of the type of coffee to order.  # noqa: E501
+        The name of type of coffee you want to order.  # noqa: E501
 
         :return: The name of this Order.
         :rtype: str
@@ -105,7 +105,7 @@ class Order(Model):
     def name(self, name):
         """Sets the name of this Order.
 
-        The name of the type of coffee to order.  # noqa: E501
+        The name of type of coffee you want to order.  # noqa: E501
 
         :param name: The name of this Order.
         :type name: str
@@ -123,7 +123,7 @@ class Order(Model):
     def size(self):
         """Gets the size of this Order.
 
-        Drink size.  # noqa: E501
+        The size of coffee you want to order.  # noqa: E501
 
         :return: The size of this Order.
         :rtype: str
@@ -134,7 +134,7 @@ class Order(Model):
     def size(self, size):
         """Sets the size of this Order.
 
-        Drink size.  # noqa: E501
+        The size of coffee you want to order.  # noqa: E501
 
         :param size: The size of this Order.
         :type size: str
@@ -152,7 +152,7 @@ class Order(Model):
     def temperature(self):
         """Gets the temperature of this Order.
 
-        Temperature of the drink.  # noqa: E501
+        The temperature of coffee you want to order.  # noqa: E501
 
         :return: The temperature of this Order.
         :rtype: str
@@ -163,7 +163,7 @@ class Order(Model):
     def temperature(self, temperature):
         """Sets the temperature of this Order.
 
-        Temperature of the drink.  # noqa: E501
+        The temperature of coffee you want to order.  # noqa: E501
 
         :param temperature: The temperature of this Order.
         :type temperature: str
@@ -181,7 +181,7 @@ class Order(Model):
     def milk(self):
         """Gets the milk of this Order.
 
-        Type of milk added to the drink.  # noqa: E501
+        The type of milk you want to order.  # noqa: E501
 
         :return: The milk of this Order.
         :rtype: str
@@ -192,7 +192,7 @@ class Order(Model):
     def milk(self, milk):
         """Sets the milk of this Order.
 
-        Type of milk added to the drink.  # noqa: E501
+        The type of milk you want to order.  # noqa: E501
 
         :param milk: The milk of this Order.
         :type milk: str
@@ -210,7 +210,7 @@ class Order(Model):
     def status(self):
         """Gets the status of this Order.
 
-        Order Status  # noqa: E501
+        The status of your order  # noqa: E501
 
         :return: The status of this Order.
         :rtype: str
@@ -221,7 +221,7 @@ class Order(Model):
     def status(self, status):
         """Sets the status of this Order.
 
-        Order Status  # noqa: E501
+        The status of your order  # noqa: E501
 
         :param status: The status of this Order.
         :type status: str

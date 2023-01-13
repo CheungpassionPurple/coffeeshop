@@ -10,9 +10,10 @@ tags:
 - description: Access point to Coffee Shop Orders
   name: store
 paths:
-  /store/order:
+  /store/orders:
     get:
-      description: ""
+      description: Returns a list of json schema where each one describes a coffee
+        order stored within the database.
       operationId: get_orders
       responses:
         "200":
@@ -33,10 +34,11 @@ paths:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
     post:
-      description: ""
+      description: "Submit a coffee order and choose your drink type, whether or not\
+        \ you would like milk, your drink temperature, and size."
       operationId: add_order
       parameters:
-      - description: The name of the type of coffee to order.
+      - description: The name of type of coffee you want to order.
         explode: true
         in: query
         name: name
@@ -48,7 +50,7 @@ paths:
           - drip coffee
           type: string
         style: form
-      - description: Drink size.
+      - description: The size of coffee you want to order.
         explode: true
         in: query
         name: size
@@ -61,7 +63,7 @@ paths:
           - large
           type: string
         style: form
-      - description: Temperature of the drink.
+      - description: The temperature of coffee you want to order.
         explode: true
         in: query
         name: temperature
@@ -73,7 +75,7 @@ paths:
           - cold
           type: string
         style: form
-      - description: Type of milk added to the drink.
+      - description: The type of milk you want to order.
         explode: true
         in: query
         name: milk
@@ -97,19 +99,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
           description: successful operation
-        "405":
-          description: Invalid input
-      summary: Submit a new order
+      summary: Submit a new order for a coffee.
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
-  /store/order/findByStatus:
+  /store/orders/status:
     get:
-      description: ""
+      description: Returns a list of json schema filtered by status where each returned
+        schema describes a coffee order stored within the database.
       operationId: find_orders_by_status
       parameters:
       - deprecated: false
-        description: Status values that need to be considered for filter
+        description: A state that a coffee order can be in as it is fufilled
         explode: false
         in: query
         name: status
@@ -136,18 +137,17 @@ paths:
                   $ref: '#/components/schemas/Order'
                 type: array
           description: successful operation
-        "400":
-          description: Invalid status value
-      summary: Finds Orders by status
+      summary: Finds orders by status
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
-  /store/order/{orderId}:
+  /store/orders/{orderId}:
     delete:
-      description: Deletes a record of an order.
+      description: Deletes order record from database. The order must be identified
+        by its ID.
       operationId: delete_order
       parameters:
-      - description: Order id to delete
+      - description: ID of order to delete
         explode: false
         in: path
         name: orderId
@@ -163,14 +163,14 @@ paths:
               schema:
                 type: string
           description: Successful deletion
-        "400":
-          description: Invalid order value
+        "404":
+          description: ID not found in database
       summary: Deletes a record of an order.
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
     get:
-      description: Returns all information on a single order.
+      description: Returns all information regarding a single order.
       operationId: get_order_by_id
       parameters:
       - description: ID of order to return all information on.
@@ -192,20 +192,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Order'
           description: successful operation
-        "400":
-          description: Invalid ID supplied
         "404":
-          description: Order not found
+          description: ID not found in database
       summary: Find order by ID
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
     patch:
-      description: Change the status of an order in the store. The order must be identified
-        by its ID.
+      description: Change the status of a single order in the store. The order must
+        be identified by its ID.
       operationId: update_order
       parameters:
-      - description: ID of order that needs to be updated
+      - description: ID of order to be updated
         explode: false
         in: path
         name: orderId
@@ -214,7 +212,7 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: status order that needs to be updated
+      - description: new status to update order to
         explode: true
         in: query
         name: status
@@ -236,16 +234,16 @@ paths:
                   $ref: '#/components/schemas/Order'
                 type: array
           description: Successful update
-        "405":
-          description: Invalid input
-      summary: Updates the status of the order in the store
+        "404":
+          description: ID not found in database
+      summary: Updates the status of an individual order.
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
-  /store/order/{orderId}/milktype/{milk}:
+  /store/orders/{orderId}/milktype/{milk}:
     patch:
-      description: Change the type of a milk ordered. The order must be identified
-        by its ID.
+      description: Change the type of milk ordered. The order must be identified by
+        its ID.
       operationId: update_order_milk
       parameters:
       - description: ID of order that needs to be updated
@@ -257,7 +255,7 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: milk type for order that needs to be updated
+      - description: new milk type to update order to
         explode: false
         in: path
         name: milk
@@ -279,19 +277,19 @@ paths:
                   $ref: '#/components/schemas/Order'
                 type: array
           description: Successful update
-        "405":
-          description: Invalid input
+        "404":
+          description: ID not found in database
       summary: Updates the milk type in the order
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
-  /store/order/{orderId}/nametype/{name}:
+  /store/orders/{orderId}/nametype/{name}:
     patch:
-      description: Change the type of a coffee ordered. The order must be identified
+      description: Changes the type of a coffee ordered. The order must be identified
         by its ID.
       operationId: update_order_coffee
       parameters:
-      - description: ID of order that needs to be updated
+      - description: ID of order whose type needs to be updated
         explode: false
         in: path
         name: orderId
@@ -300,7 +298,7 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: coffee type for order that needs to be updated
+      - description: new coffee type to update order to
         explode: false
         in: path
         name: name
@@ -321,13 +319,13 @@ paths:
                   $ref: '#/components/schemas/Order'
                 type: array
           description: Successful update
-        "405":
-          description: Invalid input
+        "404":
+          description: ID not found in database
       summary: Updates the coffee type in the order
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
-  /store/order/{orderId}/sizetype/{size}:
+  /store/orders/{orderId}/sizetype/{size}:
     patch:
       description: Change the size of the order. The order must be identified by its
         ID.
@@ -342,7 +340,7 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: size for order that needs to be updated
+      - description: new size to update order to
         explode: false
         in: path
         name: size
@@ -363,13 +361,13 @@ paths:
                   $ref: '#/components/schemas/Order'
                 type: array
           description: Successful update
-        "405":
-          description: Invalid input
+        "404":
+          description: ID not found in database
       summary: Updates the size of the drink ordered
       tags:
       - store
       x-openapi-router-controller: openapi_server.controllers.store_controller
-  /store/order/{orderId}/temptype/{temperature}:
+  /store/orders/{orderId}/temptype/{temperature}:
     patch:
       description: Change the temperature of the order. The order must be identified
         by its ID.
@@ -384,7 +382,7 @@ paths:
           format: int64
           type: integer
         style: simple
-      - description: temperature for order that needs to be updated
+      - description: new temperature to update order to
         explode: false
         in: path
         name: temperature
@@ -404,8 +402,8 @@ paths:
                   $ref: '#/components/schemas/Order'
                 type: array
           description: Successful update
-        "405":
-          description: Invalid input
+        "404":
+          description: ID not found in database
       summary: Updates the temperature of the order
       tags:
       - store
@@ -428,7 +426,7 @@ components:
           title: id
           type: integer
         name:
-          description: The name of the type of coffee to order.
+          description: The name of type of coffee you want to order.
           enum:
           - latte
           - espresso
@@ -436,7 +434,7 @@ components:
           title: name
           type: string
         size:
-          description: Drink size.
+          description: The size of coffee you want to order.
           enum:
           - small
           - medium
@@ -444,14 +442,14 @@ components:
           title: size
           type: string
         temperature:
-          description: Temperature of the drink.
+          description: The temperature of coffee you want to order.
           enum:
           - hot
           - cold
           title: temperature
           type: string
         milk:
-          description: Type of milk added to the drink.
+          description: The type of milk you want to order.
           enum:
           - noMilk
           - whole
@@ -460,7 +458,7 @@ components:
           title: milk
           type: string
         status:
-          description: Order Status
+          description: The status of your order
           enum:
           - placed
           - making

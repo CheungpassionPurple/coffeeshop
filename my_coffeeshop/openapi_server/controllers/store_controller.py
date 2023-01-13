@@ -9,6 +9,7 @@ from openapi_server import util
 
 
 import sqlite3
+import urllib3
 import uuid
 import os
 
@@ -19,6 +20,8 @@ DB_PATH=os.path.join(
 )
 
 def initialize_database():
+    """Initialize a dummy data base for coffee orders
+    """
     with sqlite3.connect(DB_PATH) as conn:
         # Init the order table
         columns = [
@@ -48,17 +51,17 @@ def initialize_database():
             conn.execute(insert_cmd)
 
 def add_order(name, size=None, temperature=None, milk=None):  # noqa: E501
-    """Submit a new order
+    """Submit a new order for a coffee.
 
-     # noqa: E501
+    Submit a coffee order and choose your drink type, whether or not you would like milk, your drink temperature, and size. # noqa: E501
 
-    :param name: The name of the type of coffee to order.
+    :param name: The name of type of coffee you want to order.
     :type name: str
-    :param size: Drink size.
+    :param size: The size of coffee you want to order.
     :type size: str
-    :param temperature: Temperature of the drink.
+    :param temperature: The temperature of coffee you want to order.
     :type temperature: str
-    :param milk: Type of milk added to the drink.
+    :param milk: The type of milk you want to order.
     :type milk: str
 
     :rtype: Union[Order, Tuple[Order, int], Tuple[Order, int, Dict[str, str]]
@@ -77,28 +80,31 @@ def add_order(name, size=None, temperature=None, milk=None):  # noqa: E501
     return Order(id=id,name=name,size=size,temperature=temperature,milk=milk,status=status)
 
 
-
 def delete_order(order_id):  # noqa: E501
     """Deletes a record of an order.
 
-    Deletes a record of an order. # noqa: E501
+    Deletes order record from database. The order must be identified by its ID. # noqa: E501
 
-    :param order_id: Order id to delete
+    :param order_id: ID of order to delete
     :type order_id: int
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    :rtype: Union[str, Tuple[str, int], Tuple[str, int, Dict[str, str]]
     """
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute(f"DELETE FROM OrderTable WHERE id = {order_id}")
-    return None
+    order = _get_order_by_id(order_id)
+    if order is not None:
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute(f"DELETE FROM OrderTable WHERE id = {order_id}")
+        return f"Deleted order {order_id}"
+    else:
+        return "Couldn't find an order with that ID",404
 
 
 def find_orders_by_status(status):  # noqa: E501
-    """Finds Orders by status
+    """Finds orders by status
 
-    Multiple status values can be selected at once. # noqa: E501
+    Returns a list of json schema filtered by status where each returned schema describes a coffee order stored within the database. # noqa: E501
 
-    :param status: Status values that need to be considered for filter
+    :param status: A state that a coffee order can be in as it is fufilled
     :type status: str
 
     :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
@@ -118,10 +124,11 @@ def find_orders_by_status(status):  # noqa: E501
             found_orders.append(found_order)
     return found_orders
 
-def get_order_by_id(order_id):  # noqa: E501
+
+def _get_order_by_id(order_id):  # noqa: E501
     """Find order by ID
 
-    Returns all information on a single order. # noqa: E501
+    Returns all information regarding a single order. # noqa: E501
 
     :param order_id: ID of order to return all information on.
     :type order_id: int
@@ -142,27 +149,27 @@ def get_order_by_id(order_id):  # noqa: E501
             return found_order
         return None
 
-def update_order(order_id, status):  # noqa: E501
-    """Updates a order in the store
+def get_order_by_id(order_id):  # noqa: E501
+    """Find order by ID
 
-    Change the status of an order in the store. The order must be identified by its ID. # noqa: E501
+    Returns all information regarding a single order. # noqa: E501
 
-    :param order_id: ID of order that needs to be updated
+    :param order_id: ID of order to return all information on.
     :type order_id: int
-    :param status: status order that needs to be updated
-    :type status: str
 
-    :rtype: Union[None, Tuple[None, int], Tuple[None, int, Dict[str, str]]
+    :rtype: Union[Order, Tuple[Order, int], Tuple[Order, int, Dict[str, str]]
     """
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute(f"UPDATE OrderTable SET status = '{status}' WHERE id = {order_id}")
-    with sqlite3.connect(DB_PATH) as conn:
-        return get_order_by_id(order_id)
+    order = _get_order_by_id(order_id)
+    if order is not None:
+        return order
+    else:
+        return "Couldn't find an order with that ID",404
+
 
 def get_orders():  # noqa: E501
     """Retrieve all records of coffee orders from the store.
 
-     # noqa: E501
+    Returns a list of json schema where each one describes a coffee order stored within the database. # noqa: E501
 
 
     :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
@@ -184,40 +191,70 @@ def get_orders():  # noqa: E501
     return orders
 
 
-def update_order_coffee(order_id, name):  # noqa: E501
-    """Updates the coffee type in the order
+def update_order(order_id, status):  # noqa: E501
+    """Updates the status of an individual order.
 
-    Change the type of a coffee ordered. The order must be identified by its ID. # noqa: E501
+    Change the status of a single order in the store. The order must be identified by its ID. # noqa: E501
 
-    :param order_id: ID of order that needs to be updated
+    :param order_id: ID of order to be updated
     :type order_id: int
-    :param name: coffee type for order that needs to be updated
-    :type name: str
+    :param status: new status to update order to
+    :type status: str
 
     :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
     """
     with sqlite3.connect(DB_PATH) as conn:
-        conn.execute(f"UPDATE OrderTable SET name = '{name}' WHERE id = {order_id}")
+        conn.execute(f"UPDATE OrderTable SET status = '{status}' WHERE id = {order_id}")
     with sqlite3.connect(DB_PATH) as conn:
-        return get_order_by_id(order_id)
+        return _get_order_by_id(order_id)
+
+
+def update_order_coffee(order_id, name):  # noqa: E501
+    """Updates the coffee type in the order
+
+    Changes the type of a coffee ordered. The order must be identified by its ID. # noqa: E501
+
+    :param order_id: ID of order whose type needs to be updated
+    :type order_id: int
+    :param name: new coffee type to update order to
+    :type name: str
+
+    :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
+    """
+    order = _get_order_by_id(order_id)
+    if order is not None:
+        if order.status != 'placed':
+            return "Cannot change name parameter. Order is in progress. Parameters locked.",403
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute(f"UPDATE OrderTable SET name = '{name}' WHERE id = {order_id}")
+        with sqlite3.connect(DB_PATH) as conn:
+            return _get_order_by_id(order_id)
+    else:
+        return "Couldn't find an order with that ID",404
 
 
 def update_order_milk(order_id, milk):  # noqa: E501
     """Updates the milk type in the order
 
-    Change the type of a milk ordered. The order must be identified by its ID. # noqa: E501
+    Change the type of milk ordered. The order must be identified by its ID. # noqa: E501
 
     :param order_id: ID of order that needs to be updated
     :type order_id: int
-    :param milk: milk type for order that needs to be updated
+    :param milk: new milk type to update order to
     :type milk: str
 
     :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
     """
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute(f"UPDATE OrderTable SET milk = '{milk}' WHERE id = {order_id}")
-    with sqlite3.connect(DB_PATH) as conn:
-        return get_order_by_id(order_id)
+    order = _get_order_by_id(order_id)
+    if order is not None:
+        if order.status != 'placed':
+            return "Cannot change name parameter. Order is in progress. Parameters locked.",403
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute(f"UPDATE OrderTable SET milk = '{milk}' WHERE id = {order_id}")
+        with sqlite3.connect(DB_PATH) as conn:
+            return _get_order_by_id(order_id)
+    else:
+        return "Couldn't find an order with that ID",404
 
 
 def update_order_size(order_id, size):  # noqa: E501
@@ -227,16 +264,21 @@ def update_order_size(order_id, size):  # noqa: E501
 
     :param order_id: ID of order that needs to be updated
     :type order_id: int
-    :param size: size for order that needs to be updated
+    :param size: new size to update order to
     :type size: str
 
     :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
-    """
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute(f"UPDATE OrderTable SET size = '{size}' WHERE id = {order_id}")
-    with sqlite3.connect(DB_PATH) as conn:
-        return get_order_by_id(order_id)
-
+    """ 
+    order = _get_order_by_id(order_id)
+    if order is not None:
+        if order.status != 'placed':
+            return "Cannot change name parameter. Order is in progress. Parameters locked.",403
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute(f"UPDATE OrderTable SET size = '{size}' WHERE id = {order_id}")
+        with sqlite3.connect(DB_PATH) as conn:
+            return _get_order_by_id(order_id)
+    else:
+        return "Couldn't find an order with that ID",404
 
 def update_order_temp(order_id, temperature):  # noqa: E501
     """Updates the temperature of the order
@@ -245,18 +287,21 @@ def update_order_temp(order_id, temperature):  # noqa: E501
 
     :param order_id: ID of order that needs to be updated
     :type order_id: int
-    :param temperature: temperature for order that needs to be updated
+    :param temperature: new temperature to update order to
     :type temperature: str
 
     :rtype: Union[List[Order], Tuple[List[Order], int], Tuple[List[Order], int, Dict[str, str]]
     """
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute(f"UPDATE OrderTable SET temperature = '{temperature}' WHERE id = {order_id}")
-    with sqlite3.connect(DB_PATH) as conn:
-        return get_order_by_id(order_id)
+    order = _get_order_by_id(order_id)
+    if order is not None:
+        if order.status != 'placed':
+            return "Cannot change name parameter. Order is in progress. Parameters locked.",403
+        with sqlite3.connect(DB_PATH) as conn:
+            conn.execute(f"UPDATE OrderTable SET temperature = '{temperature}' WHERE id = {order_id}")
+        with sqlite3.connect(DB_PATH) as conn:
+            return _get_order_by_id(order_id)
+    else:
+        return "Couldn't find an order with that ID",404
 
 if not os.path.exists(DB_PATH):
     initialize_database()
-
-
-

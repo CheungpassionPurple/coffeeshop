@@ -11,12 +11,12 @@ tags:
     description: Access point to Coffee Shop Orders
 
 paths:
-  /store/order:
+  /store/orders:
     post:
       tags:
         - store
-      summary: Submit a new order
-      description: ''
+      summary: Submit a new order for a coffee. 
+      description: Submit a coffee order and choose your drink type, whether or not you would like milk, your drink temperature, and size.
       operationId: addOrder
       responses:
         '200':
@@ -28,12 +28,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '405':
-          description: Invalid input
       parameters:
         - name: name
           in: query
-          description: The name of the type of coffee to order.
+          description: The name of type of coffee you want to order.
           required: true
           schema:
             type: string
@@ -43,7 +41,7 @@ paths:
               - drip coffee
         - name: size
           in: query
-          description: Drink size.
+          description: The size of coffee you want to order.
           schema: 
             type: string
             enum:
@@ -53,7 +51,7 @@ paths:
             default: medium
         - name: temperature
           in: query
-          description: Temperature of the drink.
+          description: The temperature of coffee you want to order.
           schema:
             type: string
             enum:
@@ -62,7 +60,7 @@ paths:
             default: hot
         - name: milk
           in: query
-          description: Type of milk added to the drink.
+          description: The type of milk you want to order.
           schema:
             type: string
             enum:
@@ -75,7 +73,7 @@ paths:
       tags:
         - store
       summary: Retrieve all records of coffee orders from the store.
-      description: ''
+      description: Returns a list of json schema where each one describes a coffee order stored within the database.
       operationId: getOrders
       responses:
         '200':
@@ -93,17 +91,17 @@ paths:
                   $ref: '#/components/schemas/Order'
 
 
-  /store/order/findByStatus:
+  /store/orders/status:
     get:
       tags:
         - store
-      summary: Finds Orders by status
-      description: ''
+      summary: Finds orders by status
+      description: Returns a list of json schema filtered by status where each returned schema describes a coffee order stored within the database.
       operationId: findOrdersByStatus
       parameters:
         - name: status
           in: query
-          description: Status values that need to be considered for filter
+          description: A state that a coffee order can be in as it is fufilled
           required: true
           style: form
           explode: false
@@ -129,14 +127,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid status value
-  '/store/order/{orderId}':
+  '/store/orders/{orderId}':
     get:
       tags:
         - store
       summary: Find order by ID
-      description: Returns all information on a single order.
+      description: Returns all information regarding a single order.
       operationId: getOrderById
       parameters:
         - name: orderId
@@ -156,27 +152,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Order'
-        '400':
-          description: Invalid ID supplied
         '404':
-          description: Order not found
+          description: ID not found in database
     patch:
       tags:
         - store
-      summary: Updates the status of the order in the store
-      description: 'Change the status of an order in the store. The order must be identified by its ID.'
+      summary: Updates the status of an individual order.
+      description: Change the status of a single order in the store. The order must be identified by its ID.
       operationId: updateOrder
       parameters:
         - name: orderId
           in: path
-          description: ID of order that needs to be updated
+          description: ID of order to be updated
           required: true
           schema:
             type: integer
             format: int64
         - name: status
           in: query
-          description: status order that needs to be updated
+          description: new status to update order to
           required: true
           schema:
             type: string
@@ -194,18 +188,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-        '405':
-          description: Invalid input
+        '404':
+          description: ID not found in database
     delete:
       tags:
         - store
       summary: Deletes a record of an order.
-      description: 'Deletes a record of an order.'
+      description: Deletes order record from database. The order must be identified by its ID.
       operationId: deleteOrder
       parameters:
         - name: orderId
           in: path
-          description: Order id to delete
+          description: ID of order to delete
           required: true
           schema:
             type: integer
@@ -217,26 +211,26 @@ paths:
             application/xml:
               schema:
                 type: string
-        '400':
-          description: Invalid order value
-  '/store/order/{orderId}/nametype/{name}':
+        '404':
+          description: ID not found in database
+  '/store/orders/{orderId}/nametype/{name}':
     patch:
       tags:
         - store
       summary: Updates the coffee type in the order
-      description: 'Change the type of a coffee ordered. The order must be identified by its ID.'
+      description: Changes the type of a coffee ordered. The order must be identified by its ID.
       operationId: updateOrderCoffee
       parameters:
         - name: orderId
           in: path
-          description: ID of order that needs to be updated
+          description: ID of order whose type needs to be updated
           required: true
           schema:
             type: integer
             format: int64
         - name: name
           in: path
-          description: coffee type for order that needs to be updated
+          description: new coffee type to update order to
           required: true
           schema:
             type: string
@@ -253,15 +247,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-        '405':
-          description: Invalid input
+        '404':
+          description: ID not found in database
           
-  '/store/order/{orderId}/milktype/{milk}':
+  '/store/orders/{orderId}/milktype/{milk}':
     patch:
       tags:
         - store
       summary: Updates the milk type in the order
-      description: 'Change the type of a milk ordered. The order must be identified by its ID.'
+      description: 'Change the type of milk ordered. The order must be identified by its ID.'
       operationId: updateOrderMilk
       parameters:
         - name: orderId
@@ -273,7 +267,7 @@ paths:
             format: int64
         - name: milk
           in: path
-          description: milk type for order that needs to be updated
+          description: new milk type to update order to
           required: true
           schema:
             type: string
@@ -291,10 +285,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-        '405':
-          description: Invalid input
+        '404':
+          description: ID not found in database
 
-  '/store/order/{orderId}/temptype/{temperature}':
+  '/store/orders/{orderId}/temptype/{temperature}':
     patch:
       tags:
         - store
@@ -311,7 +305,7 @@ paths:
             format: int64
         - name: temperature
           in: path
-          description: temperature for order that needs to be updated
+          description: new temperature to update order to
           required: true
           schema:
             type: string
@@ -327,10 +321,10 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-        '405':
-          description: Invalid input
+        '404':
+          description: ID not found in database
 
-  '/store/order/{orderId}/sizetype/{size}':
+  '/store/orders/{orderId}/sizetype/{size}':
     patch:
       tags:
         - store
@@ -347,7 +341,7 @@ paths:
             format: int64
         - name: size
           in: path
-          description: size for order that needs to be updated
+          description: new size to update order to
           required: true
           schema:
             type: string
@@ -364,8 +358,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
-        '405':
-          description: Invalid input
+        '404':
+          description: ID not found in database
 
 
 components:
@@ -380,27 +374,27 @@ components:
           format: int64
           description: A unique ID number that identifies this specific coffee order.
         name:
-          description: The name of the type of coffee to order.
+          description: The name of type of coffee you want to order.
           type: string
           enum:
             - latte
             - espresso
             - drip coffee
         size:
-          description: Drink size.
+          description: The size of coffee you want to order.
           type: string
           enum:
             - small
             - medium
             - large
         temperature:
-          description: Temperature of the drink.
+          description: The temperature of coffee you want to order.
           type: string
           enum:
             - hot
             - cold
         milk:
-          description: Type of milk added to the drink.
+          description: The type of milk you want to order.
           type: string
           enum:
             - noMilk
@@ -408,7 +402,7 @@ components:
             - oat
             - soy
         status:
-          description: Order Status
+          description: The status of your order
           type: string
           enum:
             - placed
